@@ -18,9 +18,8 @@ export default function Auth() {
       <View className="w-1/2">
         <CustomInput placeholder="Email" style={{ marginBottom: 10 }} />
         <CustomInput placeholder="Password" secureTextEntry style={{ marginBottom: 10 }} />
-        <CustomInput placeholder="Username" style={{ marginBottom: 10 }} />
       </View>
-      <Text className="text-lg font-bold my-6">Commitment Level:</Text>
+      <Text className="text-lg font-bold my-6">Choose your commitment level:</Text>
       <RadioButton.Group
         onValueChange={value => setCommitmentLevel(value)}
         value={commitmentLevel}
@@ -38,6 +37,7 @@ export default function Auth() {
           <Text className="ml-2 w-3/4">Advanced: High risk, high reward. Best for professionals using English.</Text>
         </View>
       </RadioButton.Group>
+      <View className="mb-6"></View>
       <Link href="./(tabs)/play" asChild>
         <CustomButton title="Submit" onPress={handleSubmit} />
       </Link>

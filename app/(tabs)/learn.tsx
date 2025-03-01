@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 
 export default function Learn() {
   return (
-    <View style={styles.container}>
+    <View style={styles.container} className="bg-tan">
       <Text style={styles.title}>Learn</Text>
     </View>
   );
