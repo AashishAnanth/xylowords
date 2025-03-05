@@ -1,9 +1,24 @@
+import React, { useEffect, useState } from 'react';
 import { Tabs } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import AuraCount from '../components/auracount';
 import { AuraCountProvider } from '../components/auracountcontext';
+import * as SecureStore from 'expo-secure-store';
 
 export default function TabsLayout() {
+  const [username, setUsername] = useState('');
+
+  useEffect(() => {
+    const fetchUsername = async () => {
+      const storedUsername = await SecureStore.getItemAsync('username');
+      if (storedUsername) {
+        setUsername(storedUsername);
+      }
+    };
+
+    fetchUsername();
+  }, []);
+
   return (
     <>
       <AuraCountProvider>
@@ -37,7 +52,7 @@ export default function TabsLayout() {
           <Tabs.Screen
             name="profile"
             options={{
-              title: 'Your stats',
+              title: `${username}'s stats`,
               tabBarLabel: 'Profile',
               tabBarIcon: ({ color }) => 
                 <FontAwesome name="user" size={24} color={color} />

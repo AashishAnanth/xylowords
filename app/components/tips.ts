@@ -1,0 +1,22 @@
+export const tips = [
+    "The faster you answer correctly, the more Aura Points you earn—balance speed and accuracy!",
+    "Betting higher increases potential rewards but also raises the risk of losing more points.",
+    "Syntax mastery helps create clear, well-structured sentences in any situation.",
+    "Watch out for words that sound alike but have different meanings—they can be tricky!",
+    "Harder skill levels bring tougher questions, but also greater point multipliers.",
+    "Always read all answer choices carefully before selecting the best one.",
+    "Vocabulary questions often test subtle differences—pay attention to slight shifts in meaning.",
+    "A well-structured sentence improves readability and avoids confusion.",
+    "Double negatives can change the intended meaning—use them cautiously.",
+    "Word choice impacts tone and clarity, so pick the most precise option.",
+    "The longer you take to answer, the fewer points you earn—keep a steady rhythm!",
+    "If you're unsure about a category, start at a lower skill level to refine your understanding.",
+    "Context matters—some words change meaning depending on how they’re used.",
+    "Sentence structure questions often test the most logical and natural order of words.",
+    "Subject-verb agreement can be tricky—double-check for consistency.",
+    "If you're losing points too often, adjust your approach or skill level.",
+    "Use elimination to your advantage—removing wrong answers makes choices easier.",
+    "Some words serve different functions in different contexts—analyze their role carefully.",
+    "Speed is key, but rushing too much can lead to unnecessary mistakes.",
+    "Consistent practice sharpens your instincts—keep playing to improve!"
+  ];
