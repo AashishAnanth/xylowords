@@ -57,12 +57,12 @@ export default function Auth() {
       <Link href="./(tabs)/play" asChild>
         <CustomButton title="Submit" onPress={() => { SecureStore.setItemAsync('username', username); }} />
       </Link>
-      <View className="mt-6 items-center">
+      <View className="mt-10 items-center w-7/8">
         <View className="flex-row items-center">
-          <FontAwesome name="lightbulb-o" size={24} color="#ffd700" />
+          <FontAwesome name="lightbulb-o" size={24} color="black" />
           <Text className="ml-2 text-lg font-bold">Pro Tip:</Text>
         </View>
-        <Text className="mt-2 text-lg w-3/4 text-center">{currentTip}</Text>
+        <Text className="mt-2 text-lg text-center">{currentTip}</Text>
       </View>
     </View>
   );

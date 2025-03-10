@@ -1,10 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, Image } from "react-native";
+import { useRouter } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
 import CustomButton from "./components/custombutton";
 import Auth from "./components/auth";
 
 const Welcome = () => {
   const [showAuth, setShowAuth] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkUsername = async () => {
+      const storedUsername = await SecureStore.getItemAsync('username');
+      if (storedUsername) {
+        router.replace('/(tabs)/play'); // Navigate to the tabs screen
+      }
+    };
+
+    checkUsername();
+  }, []);
 
   const handleGetStarted = () => {
     setShowAuth(true);

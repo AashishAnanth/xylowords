@@ -1,7 +1,10 @@
-import React, { useState, useContext } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import Checkbox from 'expo-checkbox';
 import { FontAwesome } from '@expo/vector-icons';
+import * as SecureStore from 'expo-secure-store';
+import CustomButton from '../components/custombutton';
+import TimeTrial from '../components/timetrial';
 
 type Category = 'syntax' | 'wordChoice' | 'vocabulary' | 'sentenceStructure';
 
@@ -15,7 +18,32 @@ export default function Play() {
     sentenceStructure: false,
   });
 
-  const [selectedWager, setSelectedWager] = useState<number>(wagers[0]); 
+  const [selectedWager, setSelectedWager] = useState<number>(wagers[0]);
+  const [auraCount, setAuraCount] = useState<number | null>(null);
+  const [showTimeTrial, setShowTimeTrial] = useState(false);
+
+  useEffect(() => {
+    const getAuraCount = async () => {
+      const storedAuraCount = await SecureStore.getItemAsync('auraCount');
+      if (storedAuraCount) {
+        setAuraCount(parseInt(storedAuraCount, 10));
+      } else {
+        setAuraCount(100); // Default value
+        await SecureStore.setItemAsync('auraCount', '100');
+      }
+    };
+
+    getAuraCount();
+  }, []);
+
+  const handleStart = () => {
+    const selectedCategories = Object.keys(categories).filter(category => categories[category as Category]);
+    if (selectedCategories.length === 0) {
+      Alert.alert("No category selected", "Please select at least one question type.");
+    } else {
+      setShowTimeTrial(true);
+    }
+  };
 
   const handleCategoryChange = (category: Category) => {
     setCategories(prevCategories => ({
@@ -32,6 +60,14 @@ export default function Play() {
       setSelectedWager(wagers[currentIndex + 1]);
     }
   };
+
+  const handleBack = () => {
+    setShowTimeTrial(false);
+  };
+
+  if (showTimeTrial) {
+    return <TimeTrial onBack={handleBack} selectedCategories={Object.keys(categories).filter(category => categories[category as Category])} />;
+  }
 
   return (
     <View className="flex-1 items-center bg-tan">
@@ -83,6 +119,11 @@ export default function Play() {
           <TouchableOpacity onPress={() => handleWagerChange('right')}>
             <FontAwesome name="caret-right" size={32} color="#a45a45" className="ml-4"/>
           </TouchableOpacity>
+        </View>
+        <View className="mt-6 items-center text-center">
+          <View>
+            <CustomButton title="Start" onPress={handleStart} />
+          </View>
         </View>
       </View>
     </View>

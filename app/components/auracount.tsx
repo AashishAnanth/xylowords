@@ -1,16 +1,24 @@
-import React, { useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { AuraCountContext } from './auracountcontext';
+import * as SecureStore from 'expo-secure-store';
 
 const AuraCount = () => {
-  const context = useContext(AuraCountContext);
+  const [auraCount, setAuraCount] = useState<number | null>(null);
 
-  if (!context) {
-    throw new Error('AuraCount must be used within an AuraCountProvider');
-  }
+  useEffect(() => {
+    const getAuraCount = async () => {
+      const storedAuraCount = await SecureStore.getItemAsync('auraCount');
+      if (storedAuraCount) {
+        setAuraCount(parseInt(storedAuraCount, 10));
+      } else {
+        setAuraCount(100); // Default value
+        await SecureStore.setItemAsync('auraCount', '100');
+      }
+    };
 
-  const { auraCount } = context;
+    getAuraCount();
+  }, []);
 
   return (
     <View className="absolute top-5 right-5 flex-row items-center">
