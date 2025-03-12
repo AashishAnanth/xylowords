@@ -11,7 +11,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({ title, ...props }) => {
       className="bg-[#ffd700] border-2 border-[#a45a45] rounded-full py-2 px-4"
       {...props}
     >
-      <Text className="text-white text-lg font-bold">{title}</Text>
+      <Text className="text-lg text-center font-bold">{title}</Text>
     </TouchableOpacity>
   );
 };

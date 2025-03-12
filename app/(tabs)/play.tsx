@@ -26,21 +26,30 @@ export default function Play() {
     const getAuraCount = async () => {
       const storedAuraCount = await SecureStore.getItemAsync('auraCount');
       if (storedAuraCount) {
-        setAuraCount(parseInt(storedAuraCount, 10));
+        const aura = Math.max(parseInt(storedAuraCount, 10), 50);
+        setAuraCount(aura);
+        await SecureStore.setItemAsync('auraCount', aura.toString());
       } else {
-        setAuraCount(100); // Default value
+        setAuraCount(100); 
         await SecureStore.setItemAsync('auraCount', '100');
       }
     };
-
+  
     getAuraCount();
   }, []);
-
-  const handleStart = () => {
+  
+  const handleStart = async () => {
     const selectedCategories = Object.keys(categories).filter(category => categories[category as Category]);
     if (selectedCategories.length === 0) {
       Alert.alert("No category selected", "Please select at least one question type.");
+    } else if (auraCount !== null && auraCount < selectedWager) {
+      Alert.alert("Low Aura", "You don't have enough aura to wager.");
     } else {
+      // Decrease aura count by the selected wager
+      const newAuraCount = Math.max((auraCount ?? 0) - selectedWager, 50);
+      setAuraCount(newAuraCount);
+      await SecureStore.setItemAsync('auraCount', newAuraCount.toString());
+  
       setShowTimeTrial(true);
     }
   };
@@ -63,6 +72,12 @@ export default function Play() {
 
   const handleBack = () => {
     setShowTimeTrial(false);
+  };
+
+  // Temporary function to set aura count to 60 for testing
+  const setAuraTo60 = async () => {
+    setAuraCount(60);
+    await SecureStore.setItemAsync('auraCount', '60');
   };
 
   if (showTimeTrial) {
@@ -123,6 +138,10 @@ export default function Play() {
         <View className="mt-6 items-center text-center">
           <View>
             <CustomButton title="Start" onPress={handleStart} />
+          </View>
+          {/* Temporary button to set aura count to 60 for testing */}
+          <View className="mt-4">
+            <CustomButton title="Set Aura to 60" onPress={setAuraTo60} />
           </View>
         </View>
       </View>
