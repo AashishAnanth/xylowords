@@ -51,15 +51,6 @@ export default function TabsLayout() {
           }}
         />
         <Tabs.Screen
-          name="learn"
-          options={{
-            title: 'Search the docs',
-            tabBarLabel: 'Learn',
-            tabBarIcon: ({ color }) => 
-              <FontAwesome name="book" size={24} color={color} />
-          }}
-        />
-        <Tabs.Screen
           name="profile"
           options={{
             title: `${username}'s stats`,
