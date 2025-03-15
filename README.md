@@ -2,7 +2,7 @@
 Learning the English language isn’t easy, and it often isn’t fun. With the allure of screens, it isn’t easy to get students excited about reading. Portflo aims to gamify English learning by adding timing and wagering features, ensuring students challenge themselves with tougher stakes and regularly practice through spaced repetition.
 
 # Requirements
-This app was built as part of FBLA's Mobile Application Development event for 2024/25. Our project meets the requirements in [this rubric]([https://connect.fbla.org/headquarters/files/High%20School%20Competitive%20Events%20Resources/Individual%20Guidelines/Presentation%20Events/Mobile-Application-Development.pdf].
+This app was built as part of FBLA's Mobile Application Development event for 2024/25. Our project meets the requirements in [this rubric](https://connect.fbla.org/headquarters/files/High%20School%20Competitive%20Events%20Resources/Individual%20Guidelines/Presentation%20Events/Mobile-Application-Development.pdf).
 - Users can easily navigate between pages through our use of Stack and Tab navigators in React Native
 - User interface is intuitive and instructions are placed to direct users when necessary
 - Icons have been designed to fit with the theme of the app
