@@ -5,28 +5,23 @@ import AuraCount from '../components/auracount';
 import * as SecureStore from 'expo-secure-store';
 
 export default function TabsLayout() {
-  const [username, setUsername] = useState('');
   const [auraCount, setAuraCount] = useState<number | null>(null);
 
   useEffect(() => {
-    const fetchUsername = async () => {
-      const storedUsername = await SecureStore.getItemAsync('username');
-      if (storedUsername) {
-        setUsername(storedUsername);
-      }
-    };
-
     const fetchAuraCount = async () => {
-      const storedAuraCount = await SecureStore.getItemAsync('auraCount');
-      if (storedAuraCount) {
-        setAuraCount(parseInt(storedAuraCount, 10));
-      } else {
-        setAuraCount(100); // Default value
-        await SecureStore.setItemAsync('auraCount', '100');
+      try {
+        const storedAuraCount = await SecureStore.getItemAsync('auraCount');
+        if (storedAuraCount) {
+          setAuraCount(parseInt(storedAuraCount, 10));
+        } else {
+          setAuraCount(200); // Default value
+          await SecureStore.setItemAsync('auraCount', '200');
+        }
+      } catch (error) {
+        console.error('Error fetching aura count:', error);
       }
     };
 
-    fetchUsername();
     fetchAuraCount();
   }, []);
 
@@ -53,7 +48,7 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="profile"
           options={{
-            title: `${username}'s stats`,
+            title: `Your stat corner`,
             tabBarLabel: 'Profile',
             tabBarIcon: ({ color }) => 
               <FontAwesome name="user" size={24} color={color} />

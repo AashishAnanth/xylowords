@@ -25,6 +25,11 @@ export default function Auth() {
     return () => clearInterval(tipInterval);
   }, []);
 
+  const handleSubmit = async () => {
+    await SecureStore.setItemAsync('username', username);
+    await SecureStore.setItemAsync('commitmentLevel', commitmentLevel);
+  };
+
   return (
     <View className="flex-1 p-5 bg-white items-center">
       <View className="w-1/2">
@@ -55,7 +60,7 @@ export default function Auth() {
       </RadioButton.Group>
       <View className="mb-6"></View>
       <Link href="./(tabs)/play" asChild>
-        <CustomButton title="Submit" onPress={() => { SecureStore.setItemAsync('username', username); }} />
+        <CustomButton title="Submit" onPress={handleSubmit} />
       </Link>
       <View className="mt-10 items-center w-7/8">
         <View className="flex-row items-center">

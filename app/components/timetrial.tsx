@@ -9,6 +9,7 @@ import { questions, Question } from './questions';
 type TimeTrialProps = {
   onBack: () => void;
   selectedCategories: string[];
+  selectedWager: number;
 };
 
 const getRandomQuestion = (categories: string[]): Question | null => {
@@ -26,7 +27,7 @@ const categoryAbbreviations: Record<string, string> = {
   sentenceStructure: 'SST',
 };
 
-const TimeTrial: React.FC<TimeTrialProps> = ({ onBack, selectedCategories }) => {
+const TimeTrial: React.FC<TimeTrialProps> = ({ onBack, selectedCategories, selectedWager }) => {
   const [timeLeft, setTimeLeft] = useState(60); // Set initial time to 60 seconds
   const [question, setQuestion] = useState<Question | null>(null);
   const [questionNumber, setQuestionNumber] = useState(1);
@@ -39,6 +40,7 @@ const TimeTrial: React.FC<TimeTrialProps> = ({ onBack, selectedCategories }) => 
     vocabulary: { correct: 0, total: 0 },
     sentenceStructure: { correct: 0, total: 0 },
   });
+  const [auraIncrement, setAuraIncrement] = useState<number>(0);
 
   useEffect(() => {
     const newQuestion = getRandomQuestion(selectedCategories);
@@ -107,19 +109,32 @@ const TimeTrial: React.FC<TimeTrialProps> = ({ onBack, selectedCategories }) => 
   const saveStats = async () => {
     const storedStats = await SecureStore.getItemAsync('stats');
     const storedTimeTrials = await SecureStore.getItemAsync('timeTrials');
+    const storedAuraCount = await SecureStore.getItemAsync('auraCount');
+    const storedCommitmentLevel = await SecureStore.getItemAsync('commitmentLevel');
+    
     const currentStats = storedStats ? JSON.parse(storedStats) : categoryStats;
     const currentTimeTrials = storedTimeTrials ? parseInt(storedTimeTrials, 10) : 0;
-
+    const currentAuraCount = storedAuraCount ? parseInt(storedAuraCount, 10) : 0;
+  
     const updatedStats = { ...currentStats };
     Object.keys(categoryStats).forEach(category => {
       updatedStats[category].correct += categoryStats[category].correct;
       updatedStats[category].total += categoryStats[category].total;
     });
-
+  
+    const correct = correctFirstTry;
+    const attempted = answeredQuestions;
+    const incorrect = attempted - correct;
+    const auraIncrement = ((correct - 0.5 * incorrect) / attempted) * (attempted / 16) * 1.6;
+    setAuraIncrement(auraIncrement); // Store the aura increment in state
+  
+    const updatedAuraCount = currentAuraCount + auraIncrement;
+  
     await SecureStore.setItemAsync('stats', JSON.stringify(updatedStats));
     await SecureStore.setItemAsync('timeTrials', (currentTimeTrials + 1).toString());
+    await SecureStore.setItemAsync('auraCount', updatedAuraCount.toString());
   };
-
+  
   useEffect(() => {
     if (timeLeft === 0) {
       saveStats();
@@ -155,6 +170,18 @@ const TimeTrial: React.FC<TimeTrialProps> = ({ onBack, selectedCategories }) => 
               </Text>
             </View>
           ))}
+        </View>
+        <View className="mt-6 items-center">
+          <Text className="text-xl font-bold">Aura Increment</Text>
+          <View className="flex-row items-center mt-2">
+            <FontAwesome name="fire" size={24} color="orange" />
+            <Text className="ml-2 text-xl font-bold" style={{ color: auraIncrement >= 0 ? 'green' : 'red' }}>
+              {auraIncrement >= 0 ? `+${auraIncrement.toFixed(2)}` : `${auraIncrement.toFixed(2)}`}
+            </Text>
+          </View>
+          <Text className="mt-2 text-lg text-center">
+            ({correctFirstTry} - 0.5 * {answeredQuestions - correctFirstTry}) / {answeredQuestions} * {answeredQuestions} / 16 * 1.6
+          </Text>
         </View>
         <View className="flex-row justify-around mt-6 w-full">
           <CustomButton title="Brag on X" onPress={xShare} />

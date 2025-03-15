@@ -10,11 +10,11 @@ const AuraCount = () => {
     const getAuraCount = async () => {
       const storedAuraCount = await SecureStore.getItemAsync('auraCount');
       if (storedAuraCount) {
-        const aura = Math.max(parseInt(storedAuraCount, 10), 50);
+        const aura = parseInt(storedAuraCount, 10);
         setAuraCount(aura);
       } else {
-        setAuraCount(100); // Default value
-        await SecureStore.setItemAsync('auraCount', '100');
+        setAuraCount(200); // Initial value
+        await SecureStore.setItemAsync('auraCount', '200');
       }
     };
 

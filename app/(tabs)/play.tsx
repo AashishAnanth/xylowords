@@ -26,32 +26,41 @@ export default function Play() {
     const getAuraCount = async () => {
       const storedAuraCount = await SecureStore.getItemAsync('auraCount');
       if (storedAuraCount) {
-        const aura = Math.max(parseInt(storedAuraCount, 10), 50);
+        const aura = parseInt(storedAuraCount, 10);
         setAuraCount(aura);
-        await SecureStore.setItemAsync('auraCount', aura.toString());
       } else {
-        setAuraCount(100); 
-        await SecureStore.setItemAsync('auraCount', '100');
+        setAuraCount(200); 
+        await SecureStore.setItemAsync('auraCount', '200');
       }
     };
-  
+    console.log(auraCount);
     getAuraCount();
   }, []);
   
   const handleStart = async () => {
     const selectedCategories = Object.keys(categories).filter(category => categories[category as Category]);
+    
     if (selectedCategories.length === 0) {
       Alert.alert("No category selected", "Please select at least one question type.");
-    } else if (auraCount !== null && auraCount < selectedWager) {
-      Alert.alert("Low Aura", "You don't have enough aura to wager.");
-    } else {
-      // Decrease aura count by the selected wager
-      const newAuraCount = Math.max((auraCount ?? 0) - selectedWager, 50);
-      setAuraCount(newAuraCount);
-      await SecureStore.setItemAsync('auraCount', newAuraCount.toString());
-  
-      setShowTimeTrial(true);
+      return;
     }
+    
+    if (auraCount !== null && auraCount < selectedWager) {
+      Alert.alert("Low Aura", "You don't have enough aura to wager.");
+      return;
+    }
+    
+    // Decrease aura count by the selected wager
+    const newAuraCount = Math.max((auraCount ?? 0) - selectedWager, 50);
+    if (newAuraCount < 50) {
+      Alert.alert("Low Aura", "You don't have enough aura to wager.");
+      return;
+    }
+    
+    setAuraCount(newAuraCount);
+    await SecureStore.setItemAsync('auraCount', newAuraCount.toString());
+    console.log(auraCount);
+    setShowTimeTrial(true);
   };
 
   const handleCategoryChange = (category: Category) => {
@@ -74,14 +83,10 @@ export default function Play() {
     setShowTimeTrial(false);
   };
 
-  // Temporary function to set aura count to 60 for testing
-  const setAuraTo60 = async () => {
-    setAuraCount(60);
-    await SecureStore.setItemAsync('auraCount', '60');
-  };
-
   if (showTimeTrial) {
-    return <TimeTrial onBack={handleBack} selectedCategories={Object.keys(categories).filter(category => categories[category as Category])} />;
+    return <TimeTrial onBack={handleBack} 
+    selectedCategories={Object.keys(categories).filter(category => categories[category as Category])} 
+    selectedWager={selectedWager}/>;
   }
 
   return (
@@ -124,7 +129,7 @@ export default function Play() {
             <Text className="ml-2">Sentence Structure</Text>
           </View>
         </View>
-        <Text className="font-bold text-xl mt-4 text-center">Choose Your Stake</Text>
+        <Text className="font-bold text-xl mt-4 text-center">How Much Will You Wager?</Text>
         <View className="flex-row justify-center items-center mt-4">
           <TouchableOpacity onPress={() => handleWagerChange('left')}>
             <FontAwesome name="caret-left" size={32} color="#a45a45" className="mr-4"/>
@@ -138,10 +143,6 @@ export default function Play() {
         <View className="mt-6 items-center text-center">
           <View>
             <CustomButton title="Start" onPress={handleStart} />
-          </View>
-          {/* Temporary button to set aura count to 60 for testing */}
-          <View className="mt-4">
-            <CustomButton title="Set Aura to 60" onPress={setAuraTo60} />
           </View>
         </View>
       </View>
