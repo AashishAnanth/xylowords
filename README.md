@@ -18,8 +18,10 @@ This app was built as part of FBLA's Mobile Application Development event for 20
 
 # Planning
 The platform Notion acted as a tangible planning document for this project. This is the [master plan](https://blizzard07.notion.site/17df122a34f9802881b5ee31cc6f5bc6?v=17df122a34f98135a7b7000c20e2f64b).
+
 # Documentation
-Instructions on installing and using Portflo can be found [here](https://docs.google.com/document/d/1pYfgZjuzJkcsm_I9Wd_5-5O3RWr5LKuoov4_tPY73cg/edit).
+Instructions on installing and using Xylowords can be found [here](https://docs.google.com/document/d/1pYfgZjuzJkcsm_I9Wd_5-5O3RWr5LKuoov4_tPY73cg/edit).
+
 # Future Goals
 - Make the app cross-platform to work on all devices
 - Incorporate an in-app account system where students can play alongside friends and online rivals
