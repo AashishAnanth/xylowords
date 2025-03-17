@@ -106,7 +106,9 @@ const TimeTrial: React.FC<TimeTrialProps> = ({ onBack, selectedCategories, selec
   };
 
   const xShare = async () => {
-    const message = `I completed a #XylowordsApp time trial and got ${correctFirstTry} out of ${answeredQuestions} questions correct in 60 seconds! Think you can beat me? Find out by downloading Xylowords on the Play Store.`;
+    const message = `I completed a #XylowordsApp time trial and got ${correctFirstTry} 
+    out of ${answeredQuestions} questions correct in 60 seconds! Think you can beat me? 
+    Find out by downloading Xylowords on the Play Store.`;
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}`;
     await WebBrowser.openBrowserAsync(url);
   };
