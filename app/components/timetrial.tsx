@@ -34,18 +34,21 @@ const TimeTrial: React.FC<TimeTrialProps> = ({ onBack, selectedCategories, selec
   const [feedback, setFeedback] = useState<string | null>(null);
   const [answeredQuestions, setAnsweredQuestions] = useState<number>(0);
   const [correctFirstTry, setCorrectFirstTry] = useState<number>(0);
-  const [categoryStats, setCategoryStats] = useState<Record<string, { correct: number; total: number }>>({
+  const initialCategoryStats = {
     syntax: { correct: 0, total: 0 },
     wordChoice: { correct: 0, total: 0 },
     vocabulary: { correct: 0, total: 0 },
     sentenceStructure: { correct: 0, total: 0 },
-  });
-  const [auraIncrement, setAuraIncrement] = useState<number>(0);
+  };
+  const [categoryStats, setCategoryStats] = useState<Record<string, { correct: number; total: number }>>(initialCategoryStats);
+  const [auraRatio, setAuraRatio] = useState<number>(0);
+  const [commitmentLevel, setCommitmentLevel] = useState<string | null>(null);
 
+  // Fetch the initial question when the component mounts
   useEffect(() => {
     const newQuestion = getRandomQuestion(selectedCategories);
     setQuestion(newQuestion);
-  }, [selectedCategories]);
+  }, []);
 
   useEffect(() => {
     if (timeLeft > 0) {
@@ -57,10 +60,12 @@ const TimeTrial: React.FC<TimeTrialProps> = ({ onBack, selectedCategories, selec
     }
   }, [timeLeft]);
 
-  // Set an initial question when the component mounts
   useEffect(() => {
-    const initialQuestion = getRandomQuestion(selectedCategories);
-    setQuestion(initialQuestion);
+    const getCommitmentLevel = async () => {
+      const storedCommitmentLevel = await SecureStore.getItemAsync('commitmentLevel');
+      setCommitmentLevel(storedCommitmentLevel);
+    };
+    getCommitmentLevel();
   }, []);
 
   const handleBackPress = () => {
@@ -112,7 +117,7 @@ const TimeTrial: React.FC<TimeTrialProps> = ({ onBack, selectedCategories, selec
     const storedAuraCount = await SecureStore.getItemAsync('auraCount');
     const storedCommitmentLevel = await SecureStore.getItemAsync('commitmentLevel');
     
-    const currentStats = storedStats ? JSON.parse(storedStats) : categoryStats;
+    const currentStats = storedStats ? JSON.parse(storedStats) : initialCategoryStats;
     const currentTimeTrials = storedTimeTrials ? parseInt(storedTimeTrials, 10) : 0;
     const currentAuraCount = storedAuraCount ? parseInt(storedAuraCount, 10) : 0;
   
@@ -125,8 +130,32 @@ const TimeTrial: React.FC<TimeTrialProps> = ({ onBack, selectedCategories, selec
     const correct = correctFirstTry;
     const attempted = answeredQuestions;
     const incorrect = attempted - correct;
-    const auraIncrement = ((correct - 0.5 * incorrect) / attempted) * (attempted / 16) * 1.6;
-    setAuraIncrement(auraIncrement); // Store the aura increment in state
+    let auraRatio = ((correct - 0.5 * incorrect) / attempted) * (attempted / 20) * 1.6;
+    auraRatio = Math.round(auraRatio * 100) / 100; // Round to the nearest hundredth
+    if (auraRatio > 2) auraRatio = 2;
+    if (auraRatio < 0) auraRatio = 0;
+    setAuraRatio(auraRatio); // Store the aura ratio in state
+
+    let auraIncrement = selectedWager;
+    if (auraRatio === 1) {
+      auraIncrement = selectedWager;
+    } else if (auraRatio > 1) {
+      if (storedCommitmentLevel === 'Advanced') {
+        auraIncrement = selectedWager * auraRatio * 1.2;
+      } else if (storedCommitmentLevel === 'Developing') {
+        auraIncrement = selectedWager * auraRatio * 0.8;
+      } else {
+        auraIncrement = selectedWager * auraRatio;
+      }
+    } else {
+      if (storedCommitmentLevel === 'Developing') {
+        auraIncrement = selectedWager * auraRatio * 1.2;
+      } else if (storedCommitmentLevel === 'Advanced') {
+        auraIncrement = selectedWager * auraRatio * 0.8;
+      } else {
+        auraIncrement = selectedWager * auraRatio;
+      }
+    }
   
     const updatedAuraCount = currentAuraCount + auraIncrement;
   
@@ -143,6 +172,13 @@ const TimeTrial: React.FC<TimeTrialProps> = ({ onBack, selectedCategories, selec
 
   if (timeLeft === 0) {
     const accuracy = ((correctFirstTry / answeredQuestions) * 100).toFixed(2);
+    let multiplier = 1;
+    if (commitmentLevel === 'Developing') {
+      multiplier = auraRatio > 1 ? 0.8 : 1.2;
+    } else if (commitmentLevel === 'Advanced') {
+      multiplier = auraRatio > 1 ? 1.2 : 0.8;
+    }
+
     return (
       <View className="flex-1 items-center bg-tan p-4">
         <Text className="mt-6 text-3xl font-bold">Your Results</Text>
@@ -172,16 +208,16 @@ const TimeTrial: React.FC<TimeTrialProps> = ({ onBack, selectedCategories, selec
           ))}
         </View>
         <View className="mt-6 items-center">
-          <Text className="text-xl font-bold">Aura Increment</Text>
+          <Text className="text-xl font-bold">Ratio of Wager Gained Back</Text>
           <View className="flex-row items-center mt-2">
             <FontAwesome name="fire" size={24} color="orange" />
-            <Text className="ml-2 text-xl font-bold" style={{ color: auraIncrement >= 0 ? 'green' : 'red' }}>
-              {auraIncrement >= 0 ? `+${auraIncrement.toFixed(2)}` : `${auraIncrement.toFixed(2)}`}
+            <Text className="ml-2 text-xl font-bold" style={{ color: auraRatio > 1 ? 'green' : auraRatio < 1 ? 'red' : 'black' }}>
+              x{auraRatio.toFixed(2)}
+            </Text>
+            <Text className="ml-2 text-xl font-bold" style={{ color: multiplier === 1.2 ? 'green' : multiplier === 0.8 ? 'red' : 'black' }}>
+              x{multiplier} ({commitmentLevel})
             </Text>
           </View>
-          <Text className="mt-2 text-lg text-center">
-            ({correctFirstTry} - 0.5 * {answeredQuestions - correctFirstTry}) / {answeredQuestions} * {answeredQuestions} / 16 * 1.6
-          </Text>
         </View>
         <View className="flex-row justify-around mt-6 w-full">
           <CustomButton title="Brag on X" onPress={xShare} />
@@ -193,7 +229,7 @@ const TimeTrial: React.FC<TimeTrialProps> = ({ onBack, selectedCategories, selec
 
   return (
     <View className="flex-1 items-center bg-tan">
-      {timeLeft > -100 && (
+      {timeLeft > 50 && (
         <TouchableOpacity onPress={handleBackPress} className="absolute top-5 left-5">
           <FontAwesome name="caret-left" size={32} color="#a45a45" />
         </TouchableOpacity>

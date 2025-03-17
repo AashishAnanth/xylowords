@@ -39,7 +39,7 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="play"
           options={{
-            title: 'Time trial',
+            title: 'Home',
             tabBarLabel: 'Play',
             tabBarIcon: ({ color }) => 
               <FontAwesome name="gamepad" size={24} color={color} />
@@ -48,7 +48,7 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="profile"
           options={{
-            title: `Your stat corner`,
+            title: `Stat corner`,
             tabBarLabel: 'Profile',
             tabBarIcon: ({ color }) => 
               <FontAwesome name="user" size={24} color={color} />

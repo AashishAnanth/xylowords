@@ -33,7 +33,7 @@ const Welcome = () => {
       {!showAuth && (
         <>
           <Text className="font-bold text-3xl mb-5">Xylowords</Text>
-          <Text className="text-xl mb-10 w-2/3 text-center">Reach new English heights in this epic learning arena.</Text>
+          <Text className="text-xl mb-10 w-2/3 text-center">Make your own language arts adventure with speed tests, wagering, and word puzzles.</Text>
           <CustomButton 
             title="Get Started"
             onPress={handleGetStarted}

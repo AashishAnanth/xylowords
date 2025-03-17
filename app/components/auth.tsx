@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Alert } from 'react-native';
 import { RadioButton } from 'react-native-paper';
-import { Link } from 'expo-router';
+import { useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import CustomInput from './custominput';
 import CustomButton from "./custombutton";
@@ -12,6 +12,7 @@ export default function Auth() {
   const [username, setUsername] = useState('');
   const [commitmentLevel, setCommitmentLevel] = useState('Developing');
   const [currentTip, setCurrentTip] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     const getRandomTip = () => {
@@ -26,8 +27,15 @@ export default function Auth() {
   }, []);
 
   const handleSubmit = async () => {
+    const usernameRegex = /^[a-zA-Z0-9]{3,15}$/;
+    if (!usernameRegex.test(username)) {
+      Alert.alert("Invalid Username", "Username should be alphanumeric and between 3-15 letters.");
+      return;
+    }
+
     await SecureStore.setItemAsync('username', username);
     await SecureStore.setItemAsync('commitmentLevel', commitmentLevel);
+    router.push('./(tabs)/play');
   };
 
   return (
@@ -47,21 +55,19 @@ export default function Auth() {
       >
         <View className="flex-row items-center my-1">
           <RadioButton value="Developing" />
-          <Text className="ml-2 w-3/4">Developing: Low risk, low reward. Best for younger students and newcomers.</Text>
+          <Text className="ml-2 w-3/4">Developing: Low risk, low reward for progression.</Text>
         </View>
         <View className="flex-row items-center my-1">
           <RadioButton value="Practitioner" />
-          <Text className="ml-2 w-3/4">Practitioner: Some risk, some reward. Best for high school/college students.</Text>
+          <Text className="ml-2 w-3/4">Practitioner: Some risk, some reward for progression.</Text>
         </View>
         <View className="flex-row items-center my-1">
           <RadioButton value="Advanced" />
-          <Text className="ml-2 w-3/4">Advanced: High risk, high reward. Best for professionals using English.</Text>
+          <Text className="ml-2 w-3/4">Advanced: High risk, high reward for progression.</Text>
         </View>
       </RadioButton.Group>
       <View className="mb-6"></View>
-      <Link href="./(tabs)/play" asChild>
-        <CustomButton title="Submit" onPress={handleSubmit} />
-      </Link>
+      <CustomButton title="Submit" onPress={handleSubmit} />
       <View className="mt-10 items-center w-7/8">
         <View className="flex-row items-center">
           <FontAwesome name="lightbulb-o" size={24} color="black" />

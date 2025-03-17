@@ -12,8 +12,10 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#ffffff"
-      }
+        "foregroundImage": "./assets/adaptiveicon.png",
+        "backgroundColor": "#ffda9e"
+      },
+      "package": "com.xylowords.Xylowords"
     },
     "web": {
       "bundler": "metro",
@@ -26,6 +28,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "fe86a18a-9197-401d-a5fc-7571d75cc6a5"
+      }
     }
   }
 }

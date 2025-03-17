@@ -11,7 +11,12 @@ const AuraCount = () => {
       const storedAuraCount = await SecureStore.getItemAsync('auraCount');
       if (storedAuraCount) {
         const aura = parseInt(storedAuraCount, 10);
-        setAuraCount(aura);
+        if (isNaN(aura)) {
+          setAuraCount(200);
+          await SecureStore.setItemAsync('auraCount', '200');
+        } else {
+          setAuraCount(aura);
+        }
       } else {
         setAuraCount(200); // Initial value
         await SecureStore.setItemAsync('auraCount', '200');

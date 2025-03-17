@@ -5,6 +5,8 @@ import { FontAwesome } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
 import CustomButton from '../components/custombutton';
 import TimeTrial from '../components/timetrial';
+import DailyPuzzle from '../components/dailypuzzle';
+import { tips } from '../components/tips';
 
 type Category = 'syntax' | 'wordChoice' | 'vocabulary' | 'sentenceStructure';
 
@@ -21,25 +23,76 @@ export default function Play() {
   const [selectedWager, setSelectedWager] = useState<number>(wagers[0]);
   const [auraCount, setAuraCount] = useState<number | null>(null);
   const [showTimeTrial, setShowTimeTrial] = useState(false);
+  const [showDailyPuzzle, setShowDailyPuzzle] = useState(false);
+  const [timeLeft, setTimeLeft] = useState<string>('');
+  const [currentTip, setCurrentTip] = useState<string>('');
+  const [dailyPuzzleCompleted, setDailyPuzzleCompleted] = useState<boolean>(false);
 
   useEffect(() => {
     const getAuraCount = async () => {
       const storedAuraCount = await SecureStore.getItemAsync('auraCount');
       if (storedAuraCount) {
         const aura = parseInt(storedAuraCount, 10);
-        setAuraCount(aura);
+        if (isNaN(aura)) {
+          setAuraCount(200);
+          await SecureStore.setItemAsync('auraCount', '200');
+        } else {
+          setAuraCount(aura);
+        }
       } else {
         setAuraCount(200); 
         await SecureStore.setItemAsync('auraCount', '200');
       }
     };
-    console.log(auraCount);
+
+    const checkDailyPuzzleCompletion = async () => {
+      const today = new Date().toDateString();
+      const storedCompletionDate = await SecureStore.getItemAsync('dailyPuzzleCompletionDate');
+      if (storedCompletionDate === today) {
+        setDailyPuzzleCompleted(true);
+      } else {
+        setDailyPuzzleCompleted(false);
+      }
+    };
+
     getAuraCount();
+    checkDailyPuzzleCompletion();
+    calculateTimeLeft();
+    const interval = setInterval(calculateTimeLeft, 60000); // Update every minute
+    return () => clearInterval(interval);
   }, []);
-  
+
+  useEffect(() => {
+    const getRandomTip = () => {
+      const randomIndex = Math.floor(Math.random() * tips.length);
+      setCurrentTip(tips[randomIndex]);
+    };
+
+    getRandomTip();
+    const tipInterval = setInterval(getRandomTip, 10000);
+
+    return () => clearInterval(tipInterval);
+  }, []);
+
+  const calculateTimeLeft = () => {
+    const now = new Date();
+    const nextDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    const diff = nextDay.getTime() - now.getTime();
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    setTimeLeft(`Refreshes in ${hours} hrs, ${minutes} min`);
+  };
+
   const handleStart = async () => {
+    const storedAuraCount = await SecureStore.getItemAsync('auraCount');
+    const aura = storedAuraCount ? parseInt(storedAuraCount, 10) : 200;
+    if (isNaN(aura)) {
+      setAuraCount(200);
+      await SecureStore.setItemAsync('auraCount', '200');
+    } else {
+      setAuraCount(aura);
+    }
     const selectedCategories = Object.keys(categories).filter(category => categories[category as Category]);
-    
     if (selectedCategories.length === 0) {
       Alert.alert("No category selected", "Please select at least one question type.");
       return;
@@ -59,7 +112,6 @@ export default function Play() {
     
     setAuraCount(newAuraCount);
     await SecureStore.setItemAsync('auraCount', newAuraCount.toString());
-    console.log(auraCount);
     setShowTimeTrial(true);
   };
 
@@ -81,12 +133,23 @@ export default function Play() {
 
   const handleBack = () => {
     setShowTimeTrial(false);
+    setShowDailyPuzzle(false);
+  };
+
+  const handleDailyPuzzleCompletion = async () => {
+    const today = new Date().toDateString();
+    await SecureStore.setItemAsync('dailyPuzzleCompletionDate', today);
+    setDailyPuzzleCompleted(true);
   };
 
   if (showTimeTrial) {
     return <TimeTrial onBack={handleBack} 
     selectedCategories={Object.keys(categories).filter(category => categories[category as Category])} 
     selectedWager={selectedWager}/>;
+  }
+
+  if (showDailyPuzzle) {
+    return <DailyPuzzle onBack={handleBack} onComplete={handleDailyPuzzleCompletion} />;
   }
 
   return (
@@ -144,6 +207,25 @@ export default function Play() {
           <View>
             <CustomButton title="Start" onPress={handleStart} />
           </View>
+        </View>
+        <Text className="font-bold text-xl mt-8 text-center">Try our Daily Puzzle</Text>
+        <View className="mt-2 items-center w-7/8">
+          <View className="flex-row justify-center items-center mt-4">
+            {!dailyPuzzleCompleted && (
+              <CustomButton title="Try It" onPress={() => setShowDailyPuzzle(true)} />
+            )}
+          </View>
+          <Text className="mt-4 text-center">
+            {dailyPuzzleCompleted ? "You've completed today's puzzle. " : ''}
+            {timeLeft}
+          </Text>
+        </View>
+        <View className="mt-10 items-center w-7/8">
+          <View className="flex-row items-center">
+            <FontAwesome name="lightbulb-o" size={24} color="black" />
+            <Text className="ml-2 text-lg font-bold">Pro Tip:</Text>
+          </View>
+          <Text className="mt-2 text-lg text-center">{currentTip}</Text>
         </View>
       </View>
     </View>
