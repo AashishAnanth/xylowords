@@ -6,7 +6,7 @@ import * as SecureStore from 'expo-secure-store';
 import CustomButton from '../components/custombutton';
 import TimeTrial from '../components/timetrial';
 import DailyPuzzle from '../components/dailypuzzle';
-import { tips } from '../components/tips';
+import { tips } from '../collections/tips';
 
 type Category = 'syntax' | 'wordChoice' | 'vocabulary' | 'sentenceStructure';
 

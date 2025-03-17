@@ -4,7 +4,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import * as SecureStore from 'expo-secure-store';
 import CustomButton from '../components/custombutton';
-import { questions, Question } from './questions';
+import { questions, Question } from '../collections/questions';
 
 type TimeTrialProps = {
   onBack: () => void;

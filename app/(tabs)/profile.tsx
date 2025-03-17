@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Linking, Image, ScrollView, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, Linking, Image, ScrollView } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import CustomInput from '../components/custominput';
 import { FontAwesome } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
-import { achievements, Achievement } from '../components/achievements';
+import { achievements } from '../collections/achievements';
 
 const categoryAbbreviations: Record<string, string> = {
   syntax: 'SYN',

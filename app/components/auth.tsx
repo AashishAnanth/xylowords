@@ -6,7 +6,7 @@ import * as SecureStore from 'expo-secure-store';
 import CustomInput from './custominput';
 import CustomButton from "./custombutton";
 import { FontAwesome } from '@expo/vector-icons';
-import { tips } from './tips';
+import { tips } from '../collections/tips';
 
 export default function Auth() {
   const [username, setUsername] = useState('');

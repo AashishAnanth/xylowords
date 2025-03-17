@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import CustomInput from './custominput';
 import CustomButton from './custombutton';
-import { puzzles } from './puzzles';
+import { puzzles } from '../collections/puzzles';
 import * as SecureStore from 'expo-secure-store';
 
 interface DailyPuzzleProps {
